@@ -1,4 +1,12 @@
 import { Problem, ProblemWithStatus } from '@/types';
+import { 
+  SOLVE_STATUS, 
+  ERROR_MESSAGES, 
+  STORAGE_KEYS, 
+  API_ENDPOINTS,
+  FILE_SYSTEM,
+  PROBLEM_STATUS 
+} from '@/constants';
 
 interface JsonData {
   problems: Problem[];
@@ -13,7 +21,7 @@ export class JsonService {
       const path = await import('path');
       
       // For server-side rendering, read the file directly
-      const dbPath = path.join(process.cwd(), 'public', 'leetcode-db.json');
+      const dbPath = path.join(process.cwd(), 'public', FILE_SYSTEM.LEETCODE_DB_PATH);
       const data = fs.readFileSync(dbPath, 'utf8');
       const jsonData: JsonData = JSON.parse(data);
       
@@ -28,9 +36,9 @@ export class JsonService {
   static async getAllProblemsClient(): Promise<ProblemWithStatus[]> {
     try {
       // Fetch the JSON data from the public folder
-      const response = await fetch('/leetcode-db.json');
+      const response = await fetch(`/${FILE_SYSTEM.LEETCODE_DB_PATH}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch problems data');
+        throw new Error(ERROR_MESSAGES.FAILED_TO_FETCH);
       }
       
       const data: JsonData = await response.json();
@@ -60,7 +68,7 @@ export class JsonService {
         // Add solve attribute if not present
         return {
           ...problem,
-          solve: problem.solve || "0"
+          solve: problem.solve || SOLVE_STATUS.UNSOLVED
         };
       }
       
@@ -75,7 +83,7 @@ export class JsonService {
   static async updateSolveStatus(problemId: number, solveStatus: string): Promise<void> {
     try {
       // Call the API endpoint to update solve status
-      const response = await fetch('/api/solve-status', {
+      const response = await fetch(API_ENDPOINTS.SOLVE_STATUS, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -87,40 +95,40 @@ export class JsonService {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update solve status');
+        throw new Error(ERROR_MESSAGES.FAILED_TO_UPDATE_STATUS);
       }
 
       const result = await response.json();
       console.log(result.message);
       
       // Also save to localStorage for immediate UI updates
-      const stored = localStorage.getItem('problemSolveStatus') || '{}';
+      const stored = localStorage.getItem(STORAGE_KEYS.PROBLEM_SOLVE_STATUS) || '{}';
       const statuses = JSON.parse(stored);
       statuses[problemId] = solveStatus;
-      localStorage.setItem('problemSolveStatus', JSON.stringify(statuses));
+      localStorage.setItem(STORAGE_KEYS.PROBLEM_SOLVE_STATUS, JSON.stringify(statuses));
     } catch (error) {
       console.error('Error updating solve status:', error);
       
       // Fallback to localStorage only
-      const stored = localStorage.getItem('problemSolveStatus') || '{}';
+      const stored = localStorage.getItem(STORAGE_KEYS.PROBLEM_SOLVE_STATUS) || '{}';
       const statuses = JSON.parse(stored);
       statuses[problemId] = solveStatus;
-      localStorage.setItem('problemSolveStatus', JSON.stringify(statuses));
+      localStorage.setItem(STORAGE_KEYS.PROBLEM_SOLVE_STATUS, JSON.stringify(statuses));
     }
   }
 
   // Get solve status from localStorage
   static getSolveStatus(problemId: number): string {
     try {
-      const stored = localStorage.getItem('problemSolveStatus');
+      const stored = localStorage.getItem(STORAGE_KEYS.PROBLEM_SOLVE_STATUS);
       if (stored) {
         const statuses = JSON.parse(stored);
-        return statuses[problemId] || "0";
+        return statuses[problemId] || SOLVE_STATUS.UNSOLVED;
       }
     } catch (error) {
       console.error('Error reading solve status:', error);
     }
-    return "0";
+    return SOLVE_STATUS.UNSOLVED;
   }
 
   // Private helper method to process problems
@@ -128,13 +136,13 @@ export class JsonService {
     // Add solve attribute to each problem
     const problemsWithSolve = problems.map(problem => ({
       ...problem,
-      solve: problem.solve || "0" // Default to "0" for unsolved
+      solve: problem.solve || SOLVE_STATUS.UNSOLVED // Default to "0" for unsolved
     }));
     
     // Convert to ProblemWithStatus format
     const problemsWithStatus: ProblemWithStatus[] = problemsWithSolve.map(problem => ({
       ...problem,
-      status: 'not-attempted' // Default status
+      status: PROBLEM_STATUS.NOT_ATTEMPTED // Default status
     }));
     
     return problemsWithStatus;

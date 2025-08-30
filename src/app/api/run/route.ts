@@ -5,6 +5,15 @@ import { promisify } from 'util';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
+import { 
+  HTTP_STATUS, 
+  CODE_EXECUTION, 
+  ERROR_MESSAGES, 
+  SUCCESS_MESSAGES,
+  FILE_SYSTEM,
+  FILE_EXTENSIONS,
+  LANGUAGES
+} from '@/constants';
 
 // Configure runtime to use Node.js
 export const runtime = 'nodejs';
@@ -22,7 +31,7 @@ async function executeCode(
   
   try {
     // Create temporary directory
-    tmpDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'code-exec-'));
+    tmpDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), FILE_SYSTEM.TEMP_DIR_PREFIX));
     const inputFile = path.join(tmpDir, 'input.txt');
     const codeFile = path.join(tmpDir, `code.${getFileExtension(language)}`);
     
@@ -65,7 +74,7 @@ async function executeCode(
     
     // Execute the command
     const { stdout, stderr } = await execAsync(command, { 
-      timeout: 10000, // 10 second timeout
+      timeout: CODE_EXECUTION.TIMEOUT_MS, // 10 second timeout
       cwd: tmpDir 
     });
     
@@ -80,9 +89,9 @@ async function executeCode(
     
     return {
       success: true,
-      output: stdout || stderr || 'Program executed successfully (no output)',
+      output: stdout || stderr || SUCCESS_MESSAGES.PROGRAM_EXECUTED,
       runtime,
-      memoryUsage: Math.floor(Math.random() * 1000) + 100
+      memoryUsage: Math.floor(Math.random() * (CODE_EXECUTION.MAX_MEMORY_USAGE - CODE_EXECUTION.MIN_MEMORY_USAGE)) + CODE_EXECUTION.MIN_MEMORY_USAGE
     };
     
   } catch (error) {
@@ -109,12 +118,12 @@ async function executeCode(
 // Get file extension for each language
 function getFileExtension(language: Language): string {
   switch (language) {
-    case 'javascript': return 'js';
-    case 'python': return 'py';
-    case 'java': return 'java';
-    case 'cpp': return 'cpp';
-    case 'c': return 'c';
-    default: return 'txt';
+    case LANGUAGES.JAVASCRIPT: return FILE_EXTENSIONS[LANGUAGES.JAVASCRIPT];
+    case LANGUAGES.PYTHON: return FILE_EXTENSIONS[LANGUAGES.PYTHON];
+    case LANGUAGES.JAVA: return FILE_EXTENSIONS[LANGUAGES.JAVA];
+    case LANGUAGES.CPP: return FILE_EXTENSIONS[LANGUAGES.CPP];
+    case LANGUAGES.C: return FILE_EXTENSIONS[LANGUAGES.C];
+    default: return FILE_EXTENSIONS.DEFAULT;
   }
 }
 
@@ -124,17 +133,17 @@ export async function POST(request: NextRequest) {
 
     if (!code || !language || !problemId) {
       return NextResponse.json(
-        { success: false, error: 'Missing required fields: code, language, problemId' },
-        { status: 400 }
+        { success: false, error: ERROR_MESSAGES.MISSING_REQUIRED_FIELDS_DETAILED },
+        { status: HTTP_STATUS.BAD_REQUEST }
       );
     }
 
     // Validate language
-    const validLanguages: Language[] = ['javascript', 'python', 'java', 'cpp', 'c'];
+    const validLanguages: Language[] = [LANGUAGES.JAVASCRIPT, LANGUAGES.PYTHON, LANGUAGES.JAVA, LANGUAGES.CPP, LANGUAGES.C];
     if (!validLanguages.includes(language)) {
       return NextResponse.json(
-        { success: false, error: `Unsupported language: ${language}` },
-        { status: 400 }
+        { success: false, error: `${ERROR_MESSAGES.UNSUPPORTED_LANGUAGE} ${language}` },
+        { status: HTTP_STATUS.BAD_REQUEST }
       );
     }
 
@@ -148,8 +157,8 @@ export async function POST(request: NextRequest) {
       result = await executeCode(code, language, testCases[0].input);
     } else {
       return NextResponse.json(
-        { success: false, error: 'Either testCases or customInput must be provided' },
-        { status: 400 }
+        { success: false, error: ERROR_MESSAGES.MISSING_INPUT },
+        { status: HTTP_STATUS.BAD_REQUEST }
       );
     }
 
@@ -157,8 +166,8 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error in /api/run:', error);
     return NextResponse.json(
-      { success: false, error: 'Internal server error' },
-      { status: 500 }
+      { success: false, error: ERROR_MESSAGES.INTERNAL_SERVER_ERROR },
+      { status: HTTP_STATUS.INTERNAL_SERVER_ERROR }
     );
   }
 }

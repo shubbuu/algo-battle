@@ -5,6 +5,7 @@ import Link from 'next/link';
 import clsx from 'clsx';
 import { ProblemWithStatus } from '@/types';
 import StatusIcon from './StatusIcon';
+import { SOLVE_STATUS, UI, PROBLEM_STATUS } from '@/constants';
 
 interface ProblemItemProps {
   problem: ProblemWithStatus;
@@ -20,9 +21,9 @@ const ProblemItem = memo(({
   // Memoize expensive computations
   const statusBg = useMemo(() => {
     switch (problem.status) {
-      case 'submitted':
+      case PROBLEM_STATUS.SOLVED:
         return 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800';
-      case 'attempted':
+      case PROBLEM_STATUS.ATTEMPTED:
         return 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800';
       default:
         return 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700';
@@ -42,8 +43,8 @@ const ProblemItem = memo(({
     }
   }, [problem.difficulty]);
 
-  const solveStatus = problem.solve || "0";
-  const isSolved = solveStatus === "1";
+  const solveStatus = problem.solve || SOLVE_STATUS.UNSOLVED;
+  const isSolved = solveStatus === SOLVE_STATUS.SOLVED;
 
   const handleToggleClick = useCallback(() => {
     onToggleSolveStatus(problem.id, solveStatus);
@@ -52,7 +53,7 @@ const ProblemItem = memo(({
   return (
     <div
       className={clsx(
-        'border rounded-lg p-6 transition-all duration-200 hover:shadow-md',
+        `border rounded-lg p-6 transition-all duration-${UI.TRANSITION_DURATION_MS} hover:shadow-md`,
         statusBg
       )}
     >
@@ -84,9 +85,9 @@ const ProblemItem = memo(({
                 Solve: {solveStatus}
               </span>
               
-              {problem.status !== 'not-attempted' && (
+              {problem.status !== PROBLEM_STATUS.NOT_ATTEMPTED && (
                 <span className="text-sm text-gray-500 dark:text-gray-400">
-                  {problem.status === 'submitted' ? 'Solved' : problem.status === 'attempted' ? 'Attempted' : 'In Progress'}
+                  {problem.status === PROBLEM_STATUS.SOLVED ? 'Solved' : problem.status === PROBLEM_STATUS.ATTEMPTED ? 'Attempted' : 'In Progress'}
                 </span>
               )}
             </div>
@@ -108,7 +109,7 @@ const ProblemItem = memo(({
             {isUpdating(problem.id) ? 'Updating...' : isSolved ? "Solved" : "Unsolved"}
           </button>
           
-          {problem.status === 'submitted' && (
+          {problem.status === PROBLEM_STATUS.SOLVED && (
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
               Accepted
             </span>
@@ -118,7 +119,7 @@ const ProblemItem = memo(({
             href={`/problem/${problem.id}`}
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
           >
-            {problem.status === 'not-attempted' ? 'Solve' : 'View'}
+            {problem.status === PROBLEM_STATUS.NOT_ATTEMPTED ? 'Solve' : 'View'}
           </Link>
         </div>
       </div>

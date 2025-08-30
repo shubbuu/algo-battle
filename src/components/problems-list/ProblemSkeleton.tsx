@@ -3,6 +3,7 @@
 import { Circle } from 'lucide-react';
 import Link from 'next/link';
 import { ProblemWithStatus } from '@/types';
+import { SOLVE_STATUS, UI } from '@/constants';
 
 interface ProblemSkeletonProps {
   problem: ProblemWithStatus;
@@ -10,7 +11,7 @@ interface ProblemSkeletonProps {
 
 const ProblemSkeleton = ({ problem }: ProblemSkeletonProps) => {
   return (
-    <div className="border rounded-lg p-6 transition-all duration-200 hover:shadow-md bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+    <div className={`border rounded-lg p-6 transition-all duration-${UI.TRANSITION_DURATION_MS} hover:shadow-md bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700`}>
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4 flex-1">
           <div className="flex-shrink-0">
@@ -33,7 +34,7 @@ const ProblemSkeleton = ({ problem }: ProblemSkeletonProps) => {
               </span>
               
               <span className="text-sm text-gray-500 dark:text-gray-400">
-                Solve: {problem.solve || "0"}
+                Solve: {problem.solve || SOLVE_STATUS.UNSOLVED}
               </span>
             </div>
           </div>

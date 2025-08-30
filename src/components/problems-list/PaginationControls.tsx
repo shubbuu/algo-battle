@@ -3,6 +3,7 @@
 import { memo, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import clsx from 'clsx';
+import { UI, PAGINATION } from '@/constants';
 
 interface PaginationControlsProps {
   currentPage: number;
@@ -49,10 +50,9 @@ const PaginationControls = memo(({
             onChange={(e) => onItemsPerPageChange(Number(e.target.value))}
             className="border border-gray-300 dark:border-gray-600 rounded-md px-2 py-1 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={50}>50</option>
-            <option value={100}>100</option>
+            {PAGINATION.ITEMS_PER_PAGE_OPTIONS.map(option => (
+              <option key={option} value={option}>{option}</option>
+            ))}
           </select>
         </div>
         
@@ -77,9 +77,9 @@ const PaginationControls = memo(({
         </button>
 
         <div className="flex items-center space-x-1">
-          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+          {Array.from({ length: Math.min(PAGINATION.MAX_VISIBLE_PAGES, totalPages) }, (_, i) => {
             let pageNum;
-            if (totalPages <= 5) {
+            if (totalPages <= PAGINATION.MAX_VISIBLE_PAGES) {
               pageNum = i + 1;
             } else if (currentPage <= 3) {
               pageNum = i + 1;

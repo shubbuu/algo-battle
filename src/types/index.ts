@@ -21,7 +21,7 @@ export interface Problem {
   testCases?: TestCase[];
   solution?: string;
   createdAt?: string;
-  solve?: string; // "0" for unsolved, "1" for solved
+  solve?: string; // Use SOLVE_STATUS constants
 }
 
 export interface TestCase {
@@ -35,7 +35,7 @@ export interface Submission {
   problemId: number;
   code: string;
   language: string;
-  status: 'Accepted' | 'Wrong Answer' | 'Runtime Error' | 'Time Limit Exceeded';
+  status: 'Accepted' | 'Wrong Answer' | 'Runtime Error' | 'Time Limit Exceeded'; // Use SUBMISSION_STATUS constants
   runtime?: number;
   memoryUsage?: number;
   submittedAt: string;
@@ -48,11 +48,11 @@ export interface ProblemAttempt {
 }
 
 export interface ProblemWithStatus extends Problem {
-  status: 'not-attempted' | 'attempted' | 'submitted';
+  status: 'not-attempted' | 'attempted' | 'submitted'; // Use PROBLEM_STATUS constants
   lastSubmission?: Submission;
 }
 
-export type Language = 'javascript' | 'python' | 'java' | 'cpp' | 'c';
+export type Language = 'javascript' | 'python' | 'java' | 'cpp' | 'c'; // Use LANGUAGES constants
 
 export interface CodeExecutionResult {
   success: boolean;

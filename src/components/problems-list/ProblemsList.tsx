@@ -4,6 +4,7 @@ import { useState, useCallback, memo, useEffect } from 'react';
 import { ProblemWithStatus } from '@/types';
 import { useSolveStatus } from '@/hooks/useSolveStatus';
 import { ProblemItem, PaginationControls, ProblemSkeleton } from './index';
+import { SOLVE_STATUS, PAGINATION } from '@/constants';
 
 interface ProblemsListProps {
   initialProblems: ProblemWithStatus[];
@@ -14,7 +15,7 @@ const ProblemsList = memo(({ initialProblems }: ProblemsListProps) => {
   const [mounted, setMounted] = useState(false);
   const [localProblems, setLocalProblems] = useState(initialProblems);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(PAGINATION.DEFAULT_ITEMS_PER_PAGE);
   const { toggleSolveStatus, isUpdating, setCachedStatus } = useSolveStatus();
 
   // Ensure component is mounted on client side
@@ -26,7 +27,7 @@ const ProblemsList = memo(({ initialProblems }: ProblemsListProps) => {
   useEffect(() => {
     if (mounted) {
       initialProblems.forEach(problem => {
-        setCachedStatus(problem.id, problem.solve || "0");
+        setCachedStatus(problem.id, problem.solve || SOLVE_STATUS.UNSOLVED);
       });
     }
   }, [initialProblems, setCachedStatus, mounted]);

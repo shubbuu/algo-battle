@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import { JsonService } from '@/lib/json-service';
+import { UI, SOLVE_STATUS } from '@/constants';
 
 // Cache for solve status to prevent unnecessary API calls
 let solveStatusCache: Map<number, string>;
@@ -57,7 +58,7 @@ export function useSolveStatus() {
       clearTimeout(debounceTimeoutRef.current);
     }
 
-    const newStatus = currentStatus === "0" ? "1" : "0";
+    const newStatus = currentStatus === SOLVE_STATUS.UNSOLVED ? SOLVE_STATUS.SOLVED : SOLVE_STATUS.UNSOLVED;
     
     // Debounce rapid clicks to prevent spam
     return new Promise<string>((resolve) => {
@@ -69,7 +70,7 @@ export function useSolveStatus() {
           // Revert on error
           resolve(currentStatus);
         }
-      }, 100); // 100ms debounce
+      }, UI.DEBOUNCE_DELAY_MS); // 100ms debounce
     });
   }, [updateSolveStatus]);
 
