@@ -38327,10 +38327,31 @@
     }
   ],
   "submissions": [],
-  "problemAttempts": [],
+  "problemAttempts": [
+    {
+      "id": 3,
+      "problemId": 1,
+      "attemptedAt": "2025-08-29T12:25:31.256Z"
+    },
+    {
+      "id": 4,
+      "problemId": 15,
+      "attemptedAt": "2025-08-29T12:25:58.903Z"
+    },
+    {
+      "id": 5,
+      "problemId": 3,
+      "attemptedAt": "2025-08-29T12:30:20.735Z"
+    },
+    {
+      "id": 6,
+      "problemId": 17,
+      "attemptedAt": "2025-08-29T13:01:34.085Z"
+    }
+  ],
   "nextIds": {
     "problems": 1826,
     "submissions": 1,
-    "problemAttempts": 3
+    "problemAttempts": 7
   }
 }

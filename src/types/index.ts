@@ -2,10 +2,26 @@ export interface Problem {
   id: number;
   title: string;
   description: string;
+  is_premium: number;
   difficulty: 'Easy' | 'Medium' | 'Hard';
-  testCases: TestCase[];
+  solution_link?: string;
+  acceptance_rate?: number;
+  frequency?: number;
+  url?: string;
+  discuss_count?: number;
+  accepted?: string;
+  submissions?: string;
+  companies?: string;
+  related_topics?: string;
+  likes?: number;
+  dislikes?: number;
+  rating?: number;
+  asked_by_faang?: number;
+  similar_questions?: string;
+  testCases?: TestCase[];
   solution?: string;
-  createdAt: string;
+  createdAt?: string;
+  solve?: string; // Use SOLVE_STATUS constants
 }
 
 export interface TestCase {
@@ -19,7 +35,7 @@ export interface Submission {
   problemId: number;
   code: string;
   language: string;
-  status: 'Accepted' | 'Wrong Answer' | 'Runtime Error' | 'Time Limit Exceeded';
+  status: 'Accepted' | 'Wrong Answer' | 'Runtime Error' | 'Time Limit Exceeded'; // Use SUBMISSION_STATUS constants
   runtime?: number;
   memoryUsage?: number;
   submittedAt: string;
@@ -32,11 +48,11 @@ export interface ProblemAttempt {
 }
 
 export interface ProblemWithStatus extends Problem {
-  status: 'not-attempted' | 'attempted' | 'submitted';
+  status: 'not-attempted' | 'attempted' | 'submitted'; // Use PROBLEM_STATUS constants
   lastSubmission?: Submission;
 }
 
-export type Language = 'javascript' | 'python' | 'java' | 'cpp' | 'c';
+export type Language = 'javascript' | 'python' | 'java' | 'cpp' | 'c'; // Use LANGUAGES constants
 
 export interface CodeExecutionResult {
   success: boolean;

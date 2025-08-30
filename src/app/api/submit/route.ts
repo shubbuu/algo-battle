@@ -1,12 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { DatabaseService } from '@/lib/db-service';
 import { Language, CodeExecutionResult } from '@/types';
+import { 
+  SOLVE_STATUS, 
+  HTTP_STATUS, 
+  CODE_EXECUTION, 
+  ERROR_MESSAGES, 
+  SUCCESS_MESSAGES,
+  SUBMISSION_STATUS 
+} from '@/constants';
+
+// Configure runtime to use Node.js
+export const runtime = 'nodejs';
 
 // Simulate submission validation
 function validateSubmission(
   code: string, 
   language: Language, 
-  problemId: number
+  _problemId: number
 ): CodeExecutionResult & { status: 'Accepted' | 'Wrong Answer' | 'Runtime Error' | 'Time Limit Exceeded' } {
   try {
     const startTime = Date.now();
@@ -15,8 +25,8 @@ function validateSubmission(
     if (code.trim().length === 0) {
       return {
         success: false,
-        error: 'Code cannot be empty',
-        status: 'Runtime Error'
+        error: ERROR_MESSAGES.CODE_EMPTY,
+        status: SUBMISSION_STATUS.RUNTIME_ERROR
       };
     }
 
@@ -24,44 +34,44 @@ function validateSubmission(
     if (language === 'javascript' && !code.includes('function')) {
       return {
         success: false,
-        error: 'JavaScript code must contain a function',
-        status: 'Runtime Error'
+        error: ERROR_MESSAGES.MISSING_FUNCTION_JS,
+        status: SUBMISSION_STATUS.RUNTIME_ERROR
       };
     }
 
     if (language === 'python' && !code.includes('def')) {
       return {
         success: false,
-        error: 'Python code must contain a function definition',
-        status: 'Runtime Error'
+        error: ERROR_MESSAGES.MISSING_FUNCTION_PYTHON,
+        status: SUBMISSION_STATUS.RUNTIME_ERROR
       };
     }
 
     // For demo purposes, we'll accept submissions based on simple criteria
     // In reality, you'd run comprehensive test cases
     
-    const runtime = Date.now() - startTime + Math.floor(Math.random() * 100);
-    const memoryUsage = Math.floor(Math.random() * 1000) + 100;
+    const runtime = Date.now() - startTime + Math.floor(Math.random() * CODE_EXECUTION.RUNTIME_VARIATION_MS);
+    const memoryUsage = Math.floor(Math.random() * (CODE_EXECUTION.MAX_MEMORY_USAGE - CODE_EXECUTION.MIN_MEMORY_USAGE)) + CODE_EXECUTION.MIN_MEMORY_USAGE;
 
     // Simulate different outcomes based on code complexity
     const codeComplexity = code.length;
     
-    if (codeComplexity < 50) {
+    if (codeComplexity < CODE_EXECUTION.MIN_CODE_LENGTH) {
       return {
         success: false,
-        error: 'Solution appears too simple. Test case 3 failed.',
-        status: 'Wrong Answer',
+        error: ERROR_MESSAGES.SOLUTION_TOO_SIMPLE,
+        status: SUBMISSION_STATUS.WRONG_ANSWER,
         runtime,
         memoryUsage
       };
     }
 
-    if (runtime > 2000) {
+    if (runtime > CODE_EXECUTION.TIME_LIMIT_MS) {
       return {
         success: false,
-        error: 'Time limit exceeded',
-        status: 'Time Limit Exceeded',
-        runtime: 2000,
+        error: ERROR_MESSAGES.TIME_LIMIT_EXCEEDED,
+        status: SUBMISSION_STATUS.TIME_LIMIT_EXCEEDED,
+        runtime: CODE_EXECUTION.TIME_LIMIT_MS,
         memoryUsage
       };
     }
@@ -69,8 +79,8 @@ function validateSubmission(
     // Accept the submission
     return {
       success: true,
-      output: 'All test cases passed! Solution accepted.',
-      status: 'Accepted',
+      output: SUCCESS_MESSAGES.ALL_TEST_CASES_PASSED,
+      status: SUBMISSION_STATUS.ACCEPTED,
       runtime,
       memoryUsage
     };
@@ -90,23 +100,16 @@ export async function POST(request: NextRequest) {
 
     if (!code || !language || !problemId) {
       return NextResponse.json(
-        { success: false, error: 'Missing required fields' },
-        { status: 400 }
+        { success: false, error: ERROR_MESSAGES.MISSING_REQUIRED_FIELDS },
+        { status: HTTP_STATUS.BAD_REQUEST }
       );
     }
 
     // Validate submission
     const result = validateSubmission(code, language, problemId);
 
-    // Save submission to database
-    const submissionId = DatabaseService.createSubmission({
-      problemId,
-      code,
-      language,
-      status: result.status,
-      runtime: result.runtime,
-      memoryUsage: result.memoryUsage
-    });
+    // Generate a simple submission ID for tracking
+    const submissionId = Date.now();
 
     return NextResponse.json({
       success: result.success,
@@ -119,8 +122,8 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error in /api/submit:', error);
     return NextResponse.json(
-      { success: false, error: 'Internal server error' },
-      { status: 500 }
+      { success: false, error: ERROR_MESSAGES.INTERNAL_SERVER_ERROR },
+      { status: HTTP_STATUS.INTERNAL_SERVER_ERROR }
     );
   }
 }
