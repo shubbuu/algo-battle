@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { ProblemService } from '@/lib/problem-service';
+import { JsonService } from '@/lib/json-service';
 import ProblemSolver from '@/components/ProblemSolver';
 
 interface ProblemPageProps {
@@ -16,7 +16,7 @@ export default async function ProblemPage({ params }: ProblemPageProps) {
     notFound();
   }
 
-  const problem = await ProblemService.getProblemById(problemId);
+  const problem = await JsonService.getProblemById(problemId);
   
   if (!problem) {
     notFound();

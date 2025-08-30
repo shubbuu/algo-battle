@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
-import { ProblemService } from '@/lib/problem-service';
+import { JsonService } from '@/lib/json-service';
 
 // Cache for solve status to prevent unnecessary API calls
 let solveStatusCache: Map<number, string>;
@@ -37,7 +37,7 @@ export function useSolveStatus() {
       setUpdating(true);
       setUpdatingProblemId(problemId);
       
-      await ProblemService.updateSolveStatus(problemId, solveStatus);
+      await JsonService.updateSolveStatus(problemId, solveStatus);
       
       // Update cache
       solveStatusCache.set(problemId, solveStatus);

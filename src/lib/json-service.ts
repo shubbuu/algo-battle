@@ -4,7 +4,7 @@ interface JsonData {
   problems: Problem[];
 }
 
-export class ProblemService {
+export class JsonService {
   // Server-side method for fetching problems (for use in server components)
   static async getAllProblemsServer(): Promise<ProblemWithStatus[]> {
     try {
