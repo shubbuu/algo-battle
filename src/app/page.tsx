@@ -1,5 +1,5 @@
 import { JsonService } from '@/lib/json-service';
-import ProblemsList from '@/components/ProblemsList';
+import ProblemsList from '@/components/problems-list/ProblemsList';
 
 export default async function Home() {
   // Fetch problems using the unified problem service
