@@ -1,21 +1,22 @@
 import { notFound } from 'next/navigation';
-import { ServerJsonService } from '@/lib/server-json-service';
+import { ProblemService } from '@/lib/problem-service';
 import ProblemSolver from '@/components/ProblemSolver';
 
 interface ProblemPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function ProblemPage({ params }: ProblemPageProps) {
-  const problemId = parseInt(params.id);
+  const { id } = await params;
+  const problemId = parseInt(id);
   
   if (isNaN(problemId)) {
     notFound();
   }
 
-  const problem = await ServerJsonService.getProblemById(problemId);
+  const problem = await ProblemService.getProblemById(problemId);
   
   if (!problem) {
     notFound();
@@ -23,7 +24,7 @@ export default async function ProblemPage({ params }: ProblemPageProps) {
 
   // For now, we'll use empty submissions and default status
   // You can extend this later if needed
-  const submissions: any[] = [];
+  const submissions: never[] = [];
   const problemStatus = 'not-attempted';
 
   return (

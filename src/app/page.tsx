@@ -1,9 +1,9 @@
-import { ServerJsonService } from '@/lib/server-json-service';
+import { ProblemService } from '@/lib/problem-service';
 import ProblemsList from '@/components/ProblemsList';
 
 export default async function Home() {
-  // Fetch problems using the server-side JSON service
-  const problems = await ServerJsonService.getAllProblems();
+  // Fetch problems using the unified problem service
+  const problems = await ProblemService.getAllProblems();
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">

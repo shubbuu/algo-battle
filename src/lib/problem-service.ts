@@ -4,9 +4,28 @@ interface JsonData {
   problems: Problem[];
 }
 
-export class JsonService {
+export class ProblemService {
+  // Server-side method for fetching problems (for use in server components)
+  static async getAllProblemsServer(): Promise<ProblemWithStatus[]> {
+    try {
+      // Dynamic imports for server-side only
+      const fs = await import('fs');
+      const path = await import('path');
+      
+      // For server-side rendering, read the file directly
+      const dbPath = path.join(process.cwd(), 'public', 'leetcode-db.json');
+      const data = fs.readFileSync(dbPath, 'utf8');
+      const jsonData: JsonData = JSON.parse(data);
+      
+      return this.processProblems(jsonData.problems);
+    } catch (error) {
+      console.error('Error fetching problems:', error);
+      return [];
+    }
+  }
+
   // Client-side method for fetching problems (for use in browser)
-  static async getAllProblems(): Promise<ProblemWithStatus[]> {
+  static async getAllProblemsClient(): Promise<ProblemWithStatus[]> {
     try {
       // Fetch the JSON data from the public folder
       const response = await fetch('/leetcode-db.json');
@@ -15,23 +34,19 @@ export class JsonService {
       }
       
       const data: JsonData = await response.json();
-      
-      // Add solve attribute to each problem
-      const problemsWithSolve = data.problems.map(problem => ({
-        ...problem,
-        solve: "0" // Default to "0" for unsolved
-      }));
-      
-      // Convert to ProblemWithStatus format
-      const problemsWithStatus: ProblemWithStatus[] = problemsWithSolve.map(problem => ({
-        ...problem,
-        status: 'not-attempted' // Default status
-      }));
-      
-      return problemsWithStatus;
+      return this.processProblems(data.problems);
     } catch (error) {
       console.error('Error fetching problems:', error);
       return [];
+    }
+  }
+
+  // Unified method that works in both client and server contexts
+  static async getAllProblems(): Promise<ProblemWithStatus[]> {
+    if (typeof window === 'undefined') {
+      return this.getAllProblemsServer();
+    } else {
+      return this.getAllProblemsClient();
     }
   }
 
@@ -106,5 +121,22 @@ export class JsonService {
       console.error('Error reading solve status:', error);
     }
     return "0";
+  }
+
+  // Private helper method to process problems
+  private static processProblems(problems: Problem[]): ProblemWithStatus[] {
+    // Add solve attribute to each problem
+    const problemsWithSolve = problems.map(problem => ({
+      ...problem,
+      solve: problem.solve || "0" // Default to "0" for unsolved
+    }));
+    
+    // Convert to ProblemWithStatus format
+    const problemsWithStatus: ProblemWithStatus[] = problemsWithSolve.map(problem => ({
+      ...problem,
+      status: 'not-attempted' // Default status
+    }));
+    
+    return problemsWithStatus;
   }
 }

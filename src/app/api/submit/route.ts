@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { DatabaseService } from '@/lib/db-service';
 import { Language, CodeExecutionResult } from '@/types';
 
 // Configure runtime to use Node.js
@@ -9,7 +8,7 @@ export const runtime = 'nodejs';
 function validateSubmission(
   code: string, 
   language: Language, 
-  problemId: number
+  _problemId: number
 ): CodeExecutionResult & { status: 'Accepted' | 'Wrong Answer' | 'Runtime Error' | 'Time Limit Exceeded' } {
   try {
     const startTime = Date.now();
@@ -101,15 +100,8 @@ export async function POST(request: NextRequest) {
     // Validate submission
     const result = validateSubmission(code, language, problemId);
 
-    // Save submission to database
-    const submissionId = DatabaseService.createSubmission({
-      problemId,
-      code,
-      language,
-      status: result.status,
-      runtime: result.runtime,
-      memoryUsage: result.memoryUsage
-    });
+    // Generate a simple submission ID for tracking
+    const submissionId = Date.now();
 
     return NextResponse.json({
       success: result.success,

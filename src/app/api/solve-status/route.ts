@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     const jsonData = JSON.parse(data);
     
     // Update the solve status for the specific problem
-    const problemIndex = jsonData.problems.findIndex((p: any) => p.id === problemId);
+    const problemIndex = jsonData.problems.findIndex((p: { id: number }) => p.id === problemId);
     if (problemIndex !== -1) {
       jsonData.problems[problemIndex].solve = solveStatus;
       
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
     const jsonData = JSON.parse(data);
     
     // Find the problem
-    const problem = jsonData.problems.find((p: any) => p.id === parseInt(problemId));
+    const problem = jsonData.problems.find((p: { id: number }) => p.id === parseInt(problemId));
     
     if (problem) {
       return NextResponse.json({ 

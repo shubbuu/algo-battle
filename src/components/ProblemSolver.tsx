@@ -155,7 +155,7 @@ export default function ProblemSolver({ problem, submissions, initialStatus }: P
       if (status === 'not-attempted') {
         setStatus('attempted');
       }
-    } catch (error) {
+    } catch (_error) {
       setOutput({
         success: false,
         error: 'Failed to execute code. Please try again.'
@@ -193,7 +193,7 @@ export default function ProblemSolver({ problem, submissions, initialStatus }: P
       } else {
         setOutput(result);
       }
-    } catch (error) {
+    } catch (_error) {
       setOutput({
         success: false,
         error: 'Failed to submit solution. Please try again.'

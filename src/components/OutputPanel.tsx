@@ -2,7 +2,7 @@
 
 import { useMemo, memo } from 'react';
 import { CodeExecutionResult } from '@/types';
-import { CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { CheckCircle, XCircle } from 'lucide-react';
 import clsx from 'clsx';
 
 interface OutputPanelProps {
