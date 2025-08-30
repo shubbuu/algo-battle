@@ -97,7 +97,7 @@ export const SUBMISSION_STATUS = {
 export const PROBLEM_STATUS = {
   NOT_ATTEMPTED: 'not-attempted',
   ATTEMPTED: 'attempted',
-  SOLVED: 'solved',
+  SUBMITTED: 'submitted',
 } as const;
 
 // Error Messages

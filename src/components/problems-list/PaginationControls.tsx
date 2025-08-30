@@ -3,7 +3,7 @@
 import { memo, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import clsx from 'clsx';
-import { UI, PAGINATION } from '@/constants';
+import { PAGINATION } from '@/constants';
 
 interface PaginationControlsProps {
   currentPage: number;

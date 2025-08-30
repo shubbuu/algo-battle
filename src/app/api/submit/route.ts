@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Language, CodeExecutionResult } from '@/types';
 import { 
-  SOLVE_STATUS, 
   HTTP_STATUS, 
   CODE_EXECUTION, 
   ERROR_MESSAGES, 
@@ -15,8 +14,7 @@ export const runtime = 'nodejs';
 // Simulate submission validation
 function validateSubmission(
   code: string, 
-  language: Language, 
-  _problemId: number
+  language: Language
 ): CodeExecutionResult & { status: 'Accepted' | 'Wrong Answer' | 'Runtime Error' | 'Time Limit Exceeded' } {
   try {
     const startTime = Date.now();
@@ -106,7 +104,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate submission
-    const result = validateSubmission(code, language, problemId);
+    const result = validateSubmission(code, language);
 
     // Generate a simple submission ID for tracking
     const submissionId = Date.now();

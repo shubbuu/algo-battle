@@ -16,16 +16,22 @@ export class JsonService {
   // Server-side method for fetching problems (for use in server components)
   static async getAllProblemsServer(): Promise<ProblemWithStatus[]> {
     try {
-      // Dynamic imports for server-side only
-      const fs = await import('fs');
-      const path = await import('path');
-      
-      // For server-side rendering, read the file directly
-      const dbPath = path.join(process.cwd(), 'public', FILE_SYSTEM.LEETCODE_DB_PATH);
-      const data = fs.readFileSync(dbPath, 'utf8');
-      const jsonData: JsonData = JSON.parse(data);
-      
-      return this.processProblems(jsonData.problems);
+      // Only import fs on server-side
+      if (typeof window === 'undefined') {
+        // Dynamic imports for server-side only
+        const fs = await import('fs');
+        const path = await import('path');
+        
+        // For server-side rendering, read the file directly
+        const dbPath = path.join(process.cwd(), 'public', FILE_SYSTEM.LEETCODE_DB_PATH);
+        const data = fs.readFileSync(dbPath, 'utf8');
+        const jsonData: JsonData = JSON.parse(data);
+        
+        return this.processProblems(jsonData.problems);
+      } else {
+        // Fallback for client-side
+        return this.getAllProblemsClient();
+      }
     } catch (error) {
       console.error('Error fetching problems:', error);
       return [];
