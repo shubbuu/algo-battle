@@ -243,13 +243,11 @@ ActionButtons.displayName = 'ActionButtons';
 const CodeEditorWrapper = memo(({ 
   value, 
   onChange, 
-  language, 
-  onLanguageChange 
+  language
 }: { 
   value: string; 
   onChange: (value: string) => void; 
   language: Language; 
-  onLanguageChange: (language: Language) => void;
 }) => {
   const [mounted, setMounted] = useState(false);
 
@@ -331,7 +329,6 @@ const CodeEditorSection = memo(({
       value={code}
       onChange={setCode}
       language={language}
-      onLanguageChange={setLanguage}
     />
     
     <CustomInputPanel 

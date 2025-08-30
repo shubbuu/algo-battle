@@ -21,7 +21,7 @@ const ProblemItem = memo(({
   // Memoize expensive computations
   const statusBg = useMemo(() => {
     switch (problem.status) {
-      case PROBLEM_STATUS.SOLVED:
+      case PROBLEM_STATUS.SUBMITTED:
         return 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800';
       case PROBLEM_STATUS.ATTEMPTED:
         return 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800';
@@ -87,7 +87,7 @@ const ProblemItem = memo(({
               
               {problem.status !== PROBLEM_STATUS.NOT_ATTEMPTED && (
                 <span className="text-sm text-gray-500 dark:text-gray-400">
-                  {problem.status === PROBLEM_STATUS.SOLVED ? 'Solved' : problem.status === PROBLEM_STATUS.ATTEMPTED ? 'Attempted' : 'In Progress'}
+                  {problem.status === PROBLEM_STATUS.SUBMITTED ? 'Solved' : problem.status === PROBLEM_STATUS.ATTEMPTED ? 'Attempted' : 'In Progress'}
                 </span>
               )}
             </div>
@@ -109,7 +109,7 @@ const ProblemItem = memo(({
             {isUpdating(problem.id) ? 'Updating...' : isSolved ? "Solved" : "Unsolved"}
           </button>
           
-          {problem.status === PROBLEM_STATUS.SOLVED && (
+          {problem.status === PROBLEM_STATUS.SUBMITTED && (
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
               Accepted
             </span>
