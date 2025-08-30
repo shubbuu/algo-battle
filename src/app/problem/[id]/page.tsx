@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { JsonService } from '@/lib/json-service';
-import ProblemSolver from '@/components/ProblemSolver';
+import { ProblemSolver } from '@/components/problem-description';
 
 interface ProblemPageProps {
   params: Promise<{
