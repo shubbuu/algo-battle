@@ -124,3 +124,21 @@ export const SUCCESS_MESSAGES = {
   PROGRAM_EXECUTED: 'Program executed successfully (no output)',
   STATUS_UPDATED: 'Problem solve status updated to',
 } as const;
+
+// Header Constants
+export const HEADER = {
+  BRAND_NAME: 'Algo Battle',
+  TAGLINE: 'Master Your Coding Skills',
+  SCROLL_THRESHOLD: 10,
+  STATS: {
+    SOLVED: '1,234',
+    STREAK: '567',
+    ACCURACY: '89%',
+  },
+  NAVIGATION: {
+    PROBLEMS: 'Problems',
+    LEADERBOARD: 'Leaderboard',
+    PROFILE: 'Profile',
+  },
+  CTA: 'Start Coding',
+} as const;
