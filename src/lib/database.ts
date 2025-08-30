@@ -2,7 +2,8 @@ import fs from 'fs';
 import path from 'path';
 
 // Simple JSON-based database for cross-platform compatibility
-const dbPath = path.join(process.cwd(), 'algo-battle-db.json');
+// const dbPath = path.join(process.cwd(), 'algo-battle-db.json');
+const dbPath = path.join(process.cwd(), 'leetcode-db.json');
 
 interface DatabaseSchema {
   problems: any[];

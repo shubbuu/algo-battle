@@ -1,12 +1,9 @@
-import { DatabaseService } from '@/lib/db-service';
-import { seedDatabase } from '@/lib/seed-data';
+import { ServerJsonService } from '@/lib/server-json-service';
 import ProblemsList from '@/components/ProblemsList';
 
-export default function Home() {
-  // Seed the database on first load
-  // seedDatabase();
-  
-  const problems = DatabaseService.getAllProblems();
+export default async function Home() {
+  // Fetch problems using the server-side JSON service
+  const problems = await ServerJsonService.getAllProblems();
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -35,7 +32,7 @@ export default function Home() {
           </p>
         </div>
         
-        <ProblemsList problems={problems} />
+        <ProblemsList initialProblems={problems} />
       </main>
     </div>
   );

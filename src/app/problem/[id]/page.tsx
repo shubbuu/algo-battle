@@ -1,5 +1,5 @@
-import { DatabaseService } from '@/lib/db-service';
 import { notFound } from 'next/navigation';
+import { ServerJsonService } from '@/lib/server-json-service';
 import ProblemSolver from '@/components/ProblemSolver';
 
 interface ProblemPageProps {
@@ -8,27 +8,23 @@ interface ProblemPageProps {
   };
 }
 
-export default function ProblemPage({ params }: ProblemPageProps) {
+export default async function ProblemPage({ params }: ProblemPageProps) {
   const problemId = parseInt(params.id);
   
   if (isNaN(problemId)) {
     notFound();
   }
 
-  const problem = DatabaseService.getProblemById(problemId);
+  const problem = await ServerJsonService.getProblemById(problemId);
   
   if (!problem) {
     notFound();
   }
 
-  // Record attempt when problem is visited (only if not already attempted or submitted)
-  const currentStatus = DatabaseService.getProblemStatus(problemId);
-  if (currentStatus === 'not-attempted') {
-    DatabaseService.recordAttempt(problemId);
-  }
-
-  const submissions = DatabaseService.getSubmissionsByProblem(problemId);
-  const problemStatus = DatabaseService.getProblemStatus(problemId);
+  // For now, we'll use empty submissions and default status
+  // You can extend this later if needed
+  const submissions: any[] = [];
+  const problemStatus = 'not-attempted';
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">

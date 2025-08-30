@@ -1,5 +1,6 @@
 'use client';
 
+import { useCallback, memo } from 'react';
 import { Editor } from '@monaco-editor/react';
 import { Language } from '@/types';
 
@@ -17,10 +18,35 @@ const languageMap: Record<Language, string> = {
   c: 'c'
 };
 
-export default function MonacoEditor({ value, onChange, language }: MonacoEditorProps) {
-  const handleEditorChange = (value: string | undefined) => {
+// Memoized editor options to prevent unnecessary re-renders
+const editorOptions = {
+  fontSize: 14,
+  fontFamily: 'JetBrains Mono, Consolas, Monaco, monospace',
+  minimap: { enabled: false },
+  scrollBeyondLastLine: false,
+  wordWrap: 'on' as const,
+  lineNumbers: 'on' as const,
+  glyphMargin: false,
+  folding: false,
+  lineDecorationsWidth: 20,
+  lineNumbersMinChars: 4,
+  renderLineHighlight: 'line' as const,
+  selectOnLineNumbers: true,
+  roundedSelection: false,
+  readOnly: false,
+  cursorStyle: 'line' as const,
+  automaticLayout: true,
+  tabSize: 2,
+  insertSpaces: true,
+  detectIndentation: false,
+  trimAutoWhitespace: true,
+  padding: { top: 16, bottom: 16 }
+};
+
+const MonacoEditor = memo(({ value, onChange, language }: MonacoEditorProps) => {
+  const handleEditorChange = useCallback((value: string | undefined) => {
     onChange(value || '');
-  };
+  }, [onChange]);
 
   return (
     <Editor
@@ -29,28 +55,11 @@ export default function MonacoEditor({ value, onChange, language }: MonacoEditor
       value={value}
       onChange={handleEditorChange}
       theme="vs-dark"
-      options={{
-        fontSize: 14,
-        fontFamily: 'JetBrains Mono, Consolas, Monaco, monospace',
-        minimap: { enabled: false },
-        scrollBeyondLastLine: false,
-        wordWrap: 'on',
-        lineNumbers: 'on',
-        glyphMargin: false,
-        folding: false,
-        lineDecorationsWidth: 0,
-        lineNumbersMinChars: 3,
-        renderLineHighlight: 'line',
-        selectOnLineNumbers: true,
-        roundedSelection: false,
-        readOnly: false,
-        cursorStyle: 'line',
-        automaticLayout: true,
-        tabSize: 2,
-        insertSpaces: true,
-        detectIndentation: false,
-        trimAutoWhitespace: true
-      }}
+      options={editorOptions}
     />
   );
-}
+});
+
+MonacoEditor.displayName = 'MonacoEditor';
+
+export default MonacoEditor;

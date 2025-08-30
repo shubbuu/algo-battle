@@ -1,11 +1,19 @@
 import db from './database';
 import { Problem, Submission, ProblemAttempt, ProblemWithStatus, TestCase } from '@/types';
+import { cacheService } from './cache-service';
 import fs from 'fs';
 import path from 'path';
 
 export class DatabaseService {
   // Problem operations
   static getAllProblems(): ProblemWithStatus[] {
+    // Check cache first
+    const cachedProblems = cacheService.getProblemsList();
+    if (cachedProblems) {
+      return cachedProblems;
+    }
+
+    // If not in cache, fetch from database
     const problems = db.prepare(`
       SELECT 
         p.*,
@@ -21,25 +29,42 @@ export class DatabaseService {
       ORDER BY p.id
     `).all() as any[];
 
-    return problems.map(problem => ({
+    const processedProblems = problems.map(problem => ({
       ...problem,
       testCases: JSON.parse(problem.test_cases),
       createdAt: problem.created_at
     }));
+
+    // Cache the results
+    cacheService.setProblemsList(processedProblems);
+    
+    return processedProblems;
   }
 
   static getProblemById(id: number): Problem | null {
+    // Check cache first
+    const cachedProblem = cacheService.getProblem(id);
+    if (cachedProblem) {
+      return cachedProblem;
+    }
+
+    // If not in cache, fetch from database
     const problem = db.prepare(`
       SELECT * FROM problems WHERE id = ?
     `).get(id) as any;
 
     if (!problem) return null;
 
-    return {
+    const processedProblem = {
       ...problem,
       testCases: JSON.parse(problem.test_cases),
       createdAt: problem.created_at
     };
+
+    // Cache the result
+    cacheService.setProblem(id, processedProblem);
+    
+    return processedProblem;
   }
 
   static createProblem(problem: Omit<Problem, 'id' | 'createdAt'>): number {
@@ -56,7 +81,12 @@ export class DatabaseService {
       problem.solution
     );
     
-    return result.lastInsertRowid as number;
+    const newId = result.lastInsertRowid as number;
+    
+    // Invalidate cache when new problem is created
+    cacheService.clearProblemsListCache();
+    
+    return newId;
   }
 
   // Submission operations
@@ -75,7 +105,13 @@ export class DatabaseService {
       submission.memoryUsage
     );
     
-    return result.lastInsertRowid as number;
+    const newId = result.lastInsertRowid as number;
+    
+    // Invalidate cache when new submission is created (affects problem status)
+    cacheService.clearProblemsListCache();
+    cacheService.clearProblem(submission.problemId);
+    
+    return newId;
   }
 
   static getSubmissionsByProblem(problemId: number): Submission[] {
@@ -119,7 +155,13 @@ export class DatabaseService {
     `);
     
     const result = stmt.run(problemId);
-    return result.lastInsertRowid as number;
+    const newId = result.lastInsertRowid as number;
+    
+    // Invalidate cache when attempt is recorded (affects problem status)
+    cacheService.clearProblemsListCache();
+    cacheService.clearProblem(problemId);
+    
+    return newId;
   }
 
   // Get problem status
@@ -144,5 +186,7 @@ export class DatabaseService {
   // Clear all data
   static clearAllData() {
     db.clearAllData();
+    // Clear all cache when database is reset
+    cacheService.clearAll();
   }
 }

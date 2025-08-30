@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { DatabaseService } from '@/lib/db-service';
 import { Language, CodeExecutionResult } from '@/types';
 
+// Configure runtime to use Node.js
+export const runtime = 'nodejs';
+
 // Simulate submission validation
 function validateSubmission(
   code: string, 

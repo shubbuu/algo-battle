@@ -2,10 +2,26 @@ export interface Problem {
   id: number;
   title: string;
   description: string;
+  is_premium: number;
   difficulty: 'Easy' | 'Medium' | 'Hard';
-  testCases: TestCase[];
+  solution_link?: string;
+  acceptance_rate?: number;
+  frequency?: number;
+  url?: string;
+  discuss_count?: number;
+  accepted?: string;
+  submissions?: string;
+  companies?: string;
+  related_topics?: string;
+  likes?: number;
+  dislikes?: number;
+  rating?: number;
+  asked_by_faang?: number;
+  similar_questions?: string;
+  testCases?: TestCase[];
   solution?: string;
-  createdAt: string;
+  createdAt?: string;
+  solve?: string; // "0" for unsolved, "1" for solved
 }
 
 export interface TestCase {
