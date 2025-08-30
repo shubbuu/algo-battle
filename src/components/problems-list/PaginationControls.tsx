@@ -49,7 +49,8 @@ const PaginationControls = memo(({
             onChange={(e) => onItemsPerPageChange(Number(e.target.value))}
             className="border border-gray-300 dark:border-gray-600 rounded-md px-2 py-1 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value={25}>25</option>
+            <option value={10}>10</option>
+            <option value={20}>20</option>
             <option value={50}>50</option>
             <option value={100}>100</option>
           </select>

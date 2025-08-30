@@ -14,7 +14,7 @@ const ProblemsList = memo(({ initialProblems }: ProblemsListProps) => {
   const [mounted, setMounted] = useState(false);
   const [localProblems, setLocalProblems] = useState(initialProblems);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(25);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const { toggleSolveStatus, isUpdating, setCachedStatus } = useSolveStatus();
 
   // Ensure component is mounted on client side
